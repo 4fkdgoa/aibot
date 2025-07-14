@@ -1,0 +1,27 @@
+# Build directories 
+target/ 
+build/ 
+ 
+# IDE files 
+.settings/ 
+.project 
+.classpath 
+.metadata 
+*.iml 
+.idea/ 
+ 
+# Logs 
+*.log 
+logs/ 
+ 
+# SVN 
+.svn/ 
+ 
+# 민감한 설정 파일들 
+config.ini 
+config-*.ini 
+src/main/resources-*/ 
+application-local.yml 
+application-*.yml 
+.env 
+*.key 

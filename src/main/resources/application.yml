@@ -1,0 +1,157 @@
+server:
+  port: 8810
+  error:
+    include-exception: true
+    include-stacktrace: always
+    include-message: always
+  forward-headers-strategy: framework
+  tomcat:
+    additional-tld-skip-patterns: orai18n*.jar,gdk_custom.jar,serializer.jar,fop-transcoder-allinone-*.jar
+  servlet:
+    context-path: /api
+mybatis:
+  mapper-locations: /mapper/**/*.xml
+spring:
+  ai:
+    #openai:
+      # OpenAI API 키 설정 추가
+      #api-key: ${OPENAI_API_KEY:your-api-key-here}
+      #chat:
+       # options:
+        #  model: gpt-4o-mini
+         # temperature: 0.7
+          #max-tokens: 1000
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: kimjk/llama3.2-korean:latest
+          temperature: 0.5
+          
+    vectorstore:
+      neo4j:
+        initialize-schema: true
+        database-name: neo4j
+        index-name: custom-index
+        embedding-dimension: 3072
+        distance-type: cosine
+  datasource:
+    hikari:
+      maximum-pool-size: 200
+      minimum-idle: 20
+      transaction-isolation: TRANSACTION_READ_UNCOMMITTED
+  jmx:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+  main:
+    allow-circular-references: true
+  mvc:
+    log-request-details: true
+    static-path-pattern: /swagger*
+    pathmatch:
+      matching-strategy: ant-path-matcher
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  cache:
+    type: none
+  thymeleaf:
+    view-names: thymeleaf/*
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+springdoc:
+  cache:
+    disabled: true
+  swagger-ui:
+    use-root-path: true
+autocrm:
+  dealer:
+    configs:
+      SCL: # 삼천리 딜러
+        webapp-path: D:/workspace/AutoCRM_Samchully/WebContent
+        project-name: AutoCRM_Samchully
+        context-path: /scl
+        db-name: SFA_Samchully_test2
+      DT: # 도이치 딜러  
+        webapp-path: D:/workspace/AutoCRM_Doitsch/WebContent
+        project-name: AutoCRM_Doitsch
+        context-path: /dt
+        db-name: SFA_Doitsch_test2
+      BV: # 벤츠 딜러
+        webapp-path: D:/workspace/AutoCRM_Benz/WebContent
+        project-name: AutoCRM_Benz
+        context-path: /bv
+        db-name: SFA_Benz_test2
+    default-dealer: SCL
+  ai:
+    # 멀티 AI 시스템 활성화
+    enabled: true
+    
+    # Ollama 로컬 AI 설정
+    ollama:
+      enabled: true
+      base-url: http://localhost:11434
+      timeout: 30s
+      models:
+        # 빠른 응답용 (8B 모델)
+        linkbricks: benedict/linkbricks-llama3.1-korean:8b
+        # 정확한 응답용 (10.8B 모델)  
+        eeve: hf.co/heegyu/EEVE-Korean-Instruct-10.8B-v1.0-GGUF
+        # 기존 사용자용 (호환성)
+        llama32: llama3.2-korean
+        
+    # OpenAI GPT 설정
+    openai:
+      enabled: false
+      model: gpt-4o-mini
+      max-tokens: 1000
+      temperature: 0.7
+      
+    # 모델 선택 전략
+    strategy:
+      # 메시지 길이별 자동 선택
+      short-message: linkbricks      # 50자 이하 - 빠른 응답 (3-6초)
+      medium-message: linkbricks     # 50-200자 - 균형잡힌 응답  
+      long-message: eeve             # 200자 이상 - 정확한 응답 (8-15초)
+      
+      # 업무 유형별 선택
+      menu-search: linkbricks        # 메뉴 검색 - 빠른 응답 필요
+      data-analysis: eeve            # 데이터 분석 - 정확성 우선
+      customer-service: eeve          # 고객 응대 - 최고 품질 gpt
+      premium-request: eeve           # 중요한 업무 - GPT 사용 gpt
+      legacy-compatibility: llama32  # 기존 사용자 호환성
+      
+      # 기본 모델 (지정되지 않은 경우)
+      default: linkbricks
+      
+          # 모델 비교 기능 설정  
+    comparison:
+      enabled: true                  # 개발 중에는 true (운영시 false 고려)
+      timeout: 20s                   # 전체 응답 대기시간
+      parallel: true                 # 병렬 처리로 속도 향상
+      models: [linkbricks, eeve, llama32] # 비교할 모델들 (4-way 비교) , gpt
+      
+    # 성능 및 로깅 설정
+    monitoring:
+      enabled: true
+      log-requests: true             # 요청 로깅
+      log-responses: false           # 응답 내용은 보안상 로깅 안함
+      log-performance: true          # 응답시간, 성능 지표 로깅
+      
+    # 비용 관리 설정
+    #cost:
+     # daily-limit: 10.0              # 일일 OpenAI 사용 한도 ($)
+     # warn-threshold: 0.5            # 경고 임계값 ($) 
+     # auto-fallback: true            # 한도 초과시 Ollama로 자동 전환    
